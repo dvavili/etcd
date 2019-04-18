@@ -483,21 +483,22 @@ build-functional:
 	./bin/etcd-agent -help || true && \
 	  ./bin/etcd-proxy -help || true && \
 	  ./bin/etcd-runner --help || true && \
-	  ./bin/etcd-tester -help || true
+	  ./bin/etcd-tester -help || true && \
+	  ./bin/benchmark --help || true
 
 build-docker-functional:
 	$(info GO_VERSION: $(GO_VERSION))
 	$(info ETCD_VERSION: $(ETCD_VERSION))
 	@sed -i.bak 's|REPLACE_ME_GO_VERSION|$(GO_VERSION)|g' ./functional/Dockerfile
 	docker build \
-	  --tag gcr.io/etcd-development/etcd-functional:go$(GO_VERSION) \
+	  --tag dvavili/etcd-functional:go$(GO_VERSION) \
 	  --file ./functional/Dockerfile \
 	  .
 	@mv ./functional/Dockerfile.bak ./functional/Dockerfile
 
 	docker run \
 	  --rm \
-	  gcr.io/etcd-development/etcd-functional:go$(GO_VERSION) \
+	  dvavili/etcd-functional:go$(GO_VERSION) \
 	  /bin/bash -c "./bin/etcd --version && \
 	   ./bin/etcd-failpoints --version && \
 	   ./bin/etcdctl version && \
@@ -510,9 +511,9 @@ build-docker-functional:
 push-docker-functional:
 	$(info GO_VERSION: $(GO_VERSION))
 	$(info ETCD_VERSION: $(ETCD_VERSION))
-	gcloud docker -- push gcr.io/etcd-development/etcd-functional:go$(GO_VERSION)
+	docker push dvavili/etcd-functional:go$(GO_VERSION)
 
 pull-docker-functional:
 	$(info GO_VERSION: $(GO_VERSION))
 	$(info ETCD_VERSION: $(ETCD_VERSION))
-	docker pull gcr.io/etcd-development/etcd-functional:go$(GO_VERSION)
+	docker pull dvavili/etcd-functional:go$(GO_VERSION)

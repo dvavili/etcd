@@ -9,3 +9,4 @@ CGO_ENABLED=0 go build -v -installsuffix cgo -ldflags "-s" -o ./bin/etcd-agent .
 CGO_ENABLED=0 go build -v -installsuffix cgo -ldflags "-s" -o ./bin/etcd-proxy ./functional/cmd/etcd-proxy
 CGO_ENABLED=0 go build -v -installsuffix cgo -ldflags "-s" -o ./bin/etcd-runner ./functional/cmd/etcd-runner
 CGO_ENABLED=0 go build -v -installsuffix cgo -ldflags "-s" -o ./bin/etcd-tester ./functional/cmd/etcd-tester
+CGO_ENABLED=0 go build -v -installsuffix cgo -ldflags "-s" -o ./bin/benchmark ./tools/benchmark/

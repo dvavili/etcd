@@ -54,6 +54,9 @@ var (
 	dialTimeout time.Duration
 
 	targetLeader bool
+
+	outputDir  string
+	fileOutput bool
 )
 
 func init() {
@@ -71,4 +74,6 @@ func init() {
 	RootCmd.PersistentFlags().DurationVar(&dialTimeout, "dial-timeout", 0, "dial timeout for client connections")
 
 	RootCmd.PersistentFlags().BoolVar(&targetLeader, "target-leader", false, "connect only to the leader node")
+	RootCmd.PersistentFlags().StringVar(&outputDir, "output-dir", "", "output directory")
+	RootCmd.PersistentFlags().BoolVar(&fileOutput, "file-output", false, "'true' to output to file")
 }

@@ -214,6 +214,8 @@ func newClientCfg(endpoints []string, dialTimeout, keepAliveTime, keepAliveTimeo
 		DialTimeout:          dialTimeout,
 		DialKeepAliveTime:    keepAliveTime,
 		DialKeepAliveTimeout: keepAliveTimeout,
+		MaxCallSendMsgSize:   10 * 1024 * 1024,
+		MaxCallRecvMsgSize:   10 * 1024 * 1024,
 	}
 
 	if cfgtls != nil {

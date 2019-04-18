@@ -1,0 +1,13 @@
+- type: get
+  conns: 10
+  clients: 100
+  total: 1000
+  rate: 100000
+- type: put
+  conns: 1
+  clients: 100
+  total: 102400
+  rate: 100000
+  keySize: 123
+  keySpaceSize: 234
+  valSize: 456

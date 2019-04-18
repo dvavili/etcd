@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
-	"strings"
+	//"strings"
 	"time"
 )
 
@@ -138,13 +138,12 @@ func copyFloats(s []float64) (c []float64) {
 
 func (r *report) String() (s string) {
 	if len(r.stats.Lats) > 0 {
-		s += fmt.Sprintf("\nSummary:\n")
-		s += fmt.Sprintf("  Total:\t%s.\n", r.sec2str(r.stats.Total.Seconds()))
-		s += fmt.Sprintf("  Slowest:\t%s.\n", r.sec2str(r.stats.Slowest))
-		s += fmt.Sprintf("  Fastest:\t%s.\n", r.sec2str(r.stats.Fastest))
-		s += fmt.Sprintf("  Average:\t%s.\n", r.sec2str(r.stats.Average))
-		s += fmt.Sprintf("  Stddev:\t%s.\n", r.sec2str(r.stats.Stddev))
-		s += fmt.Sprintf("  Requests/sec:\t"+r.precision+"\n", r.stats.RPS)
+		s += fmt.Sprintf("SummaryTotal, %s\n", r.sec2str(r.stats.Total.Seconds()))
+		s += fmt.Sprintf("SummarySlowest, %s\n", r.sec2str(r.stats.Slowest))
+		s += fmt.Sprintf("SummaryFastest, %s\n", r.sec2str(r.stats.Fastest))
+		s += fmt.Sprintf("SummaryAverage, %s\n", r.sec2str(r.stats.Average))
+		s += fmt.Sprintf("SummaryStddev, %s\n", r.sec2str(r.stats.Stddev))
+		s += fmt.Sprintf("SummaryRequests/sec, "+r.precision+"\n", r.stats.RPS)
 		s += r.histogram()
 		s += r.sprintLatencies()
 		if r.sps != nil {
@@ -157,7 +156,7 @@ func (r *report) String() (s string) {
 	return s
 }
 
-func (r *report) sec2str(sec float64) string { return fmt.Sprintf(r.precision+" secs", sec) }
+func (r *report) sec2str(sec float64) string { return fmt.Sprintf(r.precision, sec) }
 
 type reportRate struct{ *report }
 
@@ -226,10 +225,10 @@ func percentiles(nums []float64) (data []float64) {
 
 func (r *report) sprintLatencies() string {
 	data := percentiles(r.stats.Lats)
-	s := fmt.Sprintf("\nLatency distribution:\n")
+	s := ""
 	for i := 0; i < len(pctls); i++ {
 		if data[i] > 0 {
-			s += fmt.Sprintf("  %v%% in %s.\n", pctls[i], r.sec2str(data[i]))
+			s += fmt.Sprintf("LatencyDist %v%%, %s\n", pctls[i], r.sec2str(data[i]))
 		}
 	}
 	return s
@@ -257,22 +256,17 @@ func (r *report) histogram() string {
 			bi++
 		}
 	}
-	s := fmt.Sprintf("\nResponse time histogram:\n")
+	s := ""
 	for i := 0; i < len(buckets); i++ {
-		// Normalize bar lengths.
-		var barLen int
-		if max > 0 {
-			barLen = counts[i] * 40 / max
-		}
-		s += fmt.Sprintf("  "+r.precision+" [%v]\t|%v\n", buckets[i], counts[i], strings.Repeat(barChar, barLen))
+		s += fmt.Sprintf("ResponseTimeHist "+r.precision+", %v\n", buckets[i], counts[i])
 	}
 	return s
 }
 
 func (r *report) errors() string {
-	s := fmt.Sprintf("\nError distribution:\n")
+	s := ""
 	for err, num := range r.stats.ErrorDist {
-		s += fmt.Sprintf("  [%d]\t%s\n", num, err)
+		s += fmt.Sprintf("ErrorDist %d, %s\n", num, err)
 	}
 	return s
 }

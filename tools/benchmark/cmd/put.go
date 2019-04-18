@@ -18,9 +18,11 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -72,10 +74,12 @@ func init() {
 }
 
 func putFunc(cmd *cobra.Command, args []string) {
+	fmt.Println("put function")
 	if keySpaceSize <= 0 {
 		fmt.Fprintf(os.Stderr, "expected positive --key-space-size, got (%v)", keySpaceSize)
 		os.Exit(1)
 	}
+	fmt.Println("put function")
 
 	requests := make(chan v3.Op, totalClients)
 	if putRate == 0 {
@@ -130,7 +134,18 @@ func putFunc(cmd *cobra.Command, args []string) {
 	wg.Wait()
 	close(r.Results())
 	bar.Finish()
-	fmt.Println(<-rc)
+
+	if fileOutput {
+		// Write to file
+		fileName := fmt.Sprintf("%d_%d_%d_%d_%d", totalConns, totalClients, keySize, valSize, putTotal)
+		absFile := filepath.Join(outputDir, fileName)
+		err := ioutil.WriteFile(absFile, []byte(<-rc), 0644)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		fmt.Println(<-rc)
+	}
 
 	if checkHashkv {
 		hashKV(cmd, clients)

@@ -17,8 +17,10 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
 	"os"
+	"path/filepath"
 	"time"
 
 	v3 "go.etcd.io/etcd/clientv3"
@@ -51,10 +53,12 @@ func init() {
 }
 
 func rangeFunc(cmd *cobra.Command, args []string) {
+	fmt.Println("range function")
 	if len(args) == 0 || len(args) > 2 {
 		fmt.Fprintln(os.Stderr, cmd.Usage())
 		os.Exit(1)
 	}
+	fmt.Println("range function")
 
 	k := args[0]
 	end := ""
@@ -115,5 +119,17 @@ func rangeFunc(cmd *cobra.Command, args []string) {
 	wg.Wait()
 	close(r.Results())
 	bar.Finish()
-	fmt.Printf("%s", <-rc)
+
+	testlog := <-rc
+	if fileOutput {
+		// Write to file
+		fileName := fmt.Sprintf("read_%s_%d_%d_%d_%d", k, totalConns, totalClients, rangeRate, rangeTotal)
+		absFile := filepath.Join(outputDir, fileName)
+		err := ioutil.WriteFile(absFile, []byte(testlog), 0644)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		fmt.Printf("%s", testlog)
+	}
 }

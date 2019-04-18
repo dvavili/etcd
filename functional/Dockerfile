@@ -13,19 +13,21 @@ RUN dnf check-update || true \
 ENV GOROOT /usr/local/go
 ENV GOPATH /go
 ENV PATH ${GOPATH}/bin:${GOROOT}/bin:${PATH}
-ENV GO_VERSION REPLACE_ME_GO_VERSION
+ENV GO_VERSION 1.11.4
 ENV GO_DOWNLOAD_URL https://storage.googleapis.com/golang
 RUN rm -rf ${GOROOT} \
   && curl -s ${GO_DOWNLOAD_URL}/go${GO_VERSION}.linux-amd64.tar.gz | tar -v -C /usr/local/ -xz \
   && mkdir -p ${GOPATH}/src ${GOPATH}/bin \
   && go version
 
-RUN mkdir -p ${GOPATH}/src/github.com/etcd-io/etcd
-ADD . ${GOPATH}/src/github.com/etcd-io/etcd
+RUN mkdir -p ${GOPATH}/src/go.etcd.io/etcd-io/etcd
+ADD . ${GOPATH}/src/go.etcd.io/etcd-io/etcd
 ADD ./functional.yaml /functional.yaml
 
 RUN go get -v github.com/etcd-io/gofail \
-  && pushd ${GOPATH}/src/github.com/etcd-io/etcd \
+  && pushd ${GOPATH}/src/go.etcd.io/etcd-io/etcd \
+  && go get -v go.etcd.io/etcd \
+  && go get -v go.etcd.io/etcd/etcdctl \
   && GO_BUILD_FLAGS="-v" ./build \
   && mkdir -p /bin \
   && cp ./bin/etcd /bin/etcd \
@@ -39,4 +41,4 @@ RUN go get -v github.com/etcd-io/gofail \
   && cp ./bin/etcd-tester /bin/etcd-tester \
   && go build -v -o /bin/benchmark ./tools/benchmark \
   && popd \
-  && rm -rf ${GOPATH}/src/github.com/etcd-io/etcd
+  && rm -rf ${GOPATH}/src/go.etcd.io/etcd-io/etcd

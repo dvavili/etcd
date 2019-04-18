@@ -93,8 +93,10 @@ func mustCreateConn() *clientv3.Client {
 		dialTotal++
 	}
 	cfg := clientv3.Config{
-		Endpoints:   connEndpoints,
-		DialTimeout: dialTimeout,
+		Endpoints:          connEndpoints,
+		DialTimeout:        dialTimeout,
+		MaxCallSendMsgSize: 10 * 1024 * 1024,
+		MaxCallRecvMsgSize: 10 * 1024 * 1024,
 	}
 	if !tls.Empty() || tls.TrustedCAFile != "" {
 		cfgtls, err := tls.ClientConfig()
